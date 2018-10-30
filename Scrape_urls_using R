@@ -1,0 +1,18 @@
+library(rvest)         # Parsing of html/xml files
+library(stringr)       # String manipulation
+library(stringi)
+
+url<-"https://www.amazon.com/Garnier-Nutrisse-Nourishing-Natural-Packaging/dp/B0194HSMMM/ref=cm_cr_arp_d_product_top?ie=UTF8&th=1"
+webpage<- read_html(url)
+
+> name_data_html <- html_nodes(webpage,'.a-profile-name') #Read Selectorgadget.com to get the css,I used chrome plugin
+> name_data <- html_text(name_data_html)
+> head(name_data)
+
+> profile_rating_html <- html_nodes(webpage,'.a-star-4 .a-icon-alt')#Read Selectorgadget.com to get the css,I used chrome plugin
+> rate_data <- html_text(profile_rating_html)
+> head(rate_data)
+
+>product_quality<-data.frame(Cust_Name = name_data,Cust_Rating = rate_data)
+
+>product_quality # will display list of customer name along with their ratings for garnier product  
