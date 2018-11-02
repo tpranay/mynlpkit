@@ -1,0 +1,16 @@
+library(xml2)
+library(rvest)
+library(lexRankr)
+
+my_url<-"https://en.wikipedia.org/wiki/Manhattan_Project" #url to summarize
+page = xml2::read_html(my_url) #read html
+page_text = rvest::html_text(rvest::html_nodes(page, "p")) #extract text from html page
+
+top_5 = lexRankr::lexRank(page_text,
+                          docId = rep(1, length(page_text)),n = 5,continuous = TRUE)
+
+#reorder the top 3 sentences to be in order of appearance in article
+order_of_appearance = order(as.integer(gsub("_","",top_5$sentenceId)))
+#extract sentences in order of appearance
+ordered_top_5 = top_5[order_of_appearance, "sentence"]
+ordered_top_5
