@@ -1,0 +1,36 @@
+library(dplyr) #data manipulation
+library(ggplot2) #visualizations
+library(gridExtra) #viewing multiple plots together
+library(tidytext) #text mining
+library(wordcloud2) #creative visualizations
+
+amazon_rev <- read.csv("Amazon_review_data.csv", stringsAsFactors = FALSE)
+
+
+removeSpecialChars <- function(x) gsub("[^a-zA-Z0-9 ]", " ", x)# function to remove special characters
+
+
+amazon_rev$Reviews <- sapply(amazon_rev$Reviews, removeSpecialChars) # remove special characters
+
+amazon_rev$Reviews <- sapply(amazon_rev$Reviews, tolower) #bring all character in lower case
+
+
+amazon_filtered <- amazon_rev %>% unnest_tokens(word, reviews) %>% anti_join(stop_words) %>% distinct() #unnest and remove stop words
+
+
+amazon_words_counts <- amazon_filtered %>%count(word, sort = TRUE) 
+wordcloud2(amazon_words_counts [1:300, ], size = .5) #wordcloud
+
+
+amazon_filtered %>%count(word, sort = TRUE) %>%top_n(10) %>%ungroup() %>%
+mutate(word = reorder(word, n)) %>%
+  ggplot() +
+    geom_col(aes(word, n), fill = my_colors[4]) +
+    theme(legend.position = "none", 
+          plot.title = element_text(hjust = 0.5),
+          panel.grid.major = element_blank()) +
+    xlab("") + 
+    ylab("Review Count") +
+    ggtitle("Most Frequently Used Words in Reviews") +
+    coord_flip()                                         #visualization for no of words
+
